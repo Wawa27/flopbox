@@ -1,0 +1,15 @@
+[
+  {
+    "username": "wawa",
+    "password": "$2a$10$VVd7Ej1wP/2F9pctqjN9E.hf2VgExDHeWJUV0qmmLgpdmfWKyPR3y",
+    "ftpServers": [
+      {
+        "host": "ftp://test.com",
+        "aliases": [
+          "test",
+          "ubuntu"
+        ]
+      }
+    ]
+  }
+]

@@ -1,7 +1,6 @@
-package fil.coo.dtos;
+package fil.coo.user;
 
-import fil.coo.models.FtpServer;
-import fil.coo.models.User;
+import fil.coo.ftp.FtpServer;
 
 import java.util.List;
 

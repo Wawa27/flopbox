@@ -1,14 +1,14 @@
-package fil.coo.dtos;
+package fil.coo.auth;
 
-public class UserAuthDto {
+public class AuthDto {
     private String password;
     private String username;
 
-    public UserAuthDto() {
+    public AuthDto() {
 
     }
 
-    public UserAuthDto(String password, String username) {
+    public AuthDto(String password, String username) {
         this.password = password;
         this.username = username;
     }

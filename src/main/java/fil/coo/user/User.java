@@ -1,8 +1,10 @@
-package fil.coo.models;
+package fil.coo.user;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import fil.coo.ftp.FtpServer;
 
 import java.util.List;
+import java.util.Objects;
 
 public class User {
     private List<FtpServer> ftpServers;
@@ -42,5 +44,18 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return username.equals(user.username);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(username);
     }
 }

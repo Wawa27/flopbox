@@ -55,21 +55,16 @@ public class FtpResource {
     }
 
     @GET
-    @Path("/{alias}")
-    @RolesAllowed("User")
-    public FtpServer get(@PathParam("alias") String alias) throws IOException {
-        return ftpService.findByAlias(jsonWebToken.getSubject(), alias);
-    }
-
-    @GET
-    @Path("/{alias}/files")
+    @Path("/{alias}/{path}")
     @RolesAllowed("User")
     public List<String> get(
             @HeaderParam("Ftp-Username") String ftpUsername,
             @HeaderParam("Ftp-Password") String ftpPassword,
-            @PathParam("alias") String alias) throws IOException {
+            @PathParam("alias") String alias,
+            @PathParam("path") String path) throws IOException {
+        System.out.println(alias);
         FtpServer ftpServer = ftpService.findByAlias(jsonWebToken.getSubject(), alias);
-        return ftpClientService.listFiles(ftpServer, ftpUsername, ftpPassword);
+        return ftpClientService.listFiles(ftpServer, ftpUsername, ftpPassword, path);
     }
 
     @POST

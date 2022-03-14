@@ -18,12 +18,17 @@ public class FtpClientService {
 
     private FTPClient connect(FtpServer ftpServer, String username, String password) throws IOException {
         FTPClient ftpClient = new FTPClient();
-        if (!ftpClient.login(username, password)) {
-            throw new BadFtpServerCredentialsException(ftpServer.getHost());
+        System.out.println("ftpClient = " + ftpClient.getReplyString());
+        ftpClient.connect("localhost", 21);
+        System.out.println("ftpClient = " + ftpClient.getReplyString());
+        try {
+            if (!ftpClient.login("bob", "12345")) {
+                throw new BadFtpServerCredentialsException(ftpClient.getReplyString());
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            System.out.println(ftpClient.getReplyString());
         }
-
-        System.out.println("Connected to " + ftpServer.getHost() + ".");
-        System.out.print(ftpClient.getReplyString());
 
         return ftpClient;
     }
@@ -34,9 +39,9 @@ public class FtpClientService {
         ftpClient.enterLocalPassiveMode();
     }
 
-    public List<String> listFiles(FtpServer ftpServer, String username, String password) throws IOException {
+    public List<String> listFiles(FtpServer ftpServer, String username, String password, String path) throws IOException {
         FTPClient ftpClient = connect(ftpServer, username, password);
         ftpClient.enterLocalPassiveMode();
-        return Arrays.stream(ftpClient.listFiles()).map(FTPFile::getName).collect(Collectors.toList());
+        return Arrays.stream(ftpClient.listFiles(path)).map(FTPFile::getName).collect(Collectors.toList());
     }
 }

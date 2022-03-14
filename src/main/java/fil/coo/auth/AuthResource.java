@@ -35,10 +35,9 @@ public class AuthResource {
     public Response login(AuthDto userAuthDto) throws IOException {
         User user = userService.findByUsername(userAuthDto.getUsername());
 
-        String token = Jwt.issuer("http://coo.com")
+        String token = Jwt.issuer("http://fil.coo.com")
                 .subject(userAuthDto.getUsername())
                 .groups(new HashSet<>(List.of("User")))
-                .claim(Claims.sub.name(), "wawa")
                 .sign();
 
         return Response.ok(user).cookie(new NewCookie("jwt", token)).build();

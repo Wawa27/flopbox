@@ -1,25 +1,23 @@
 package fil.coo.ftp;
 
-import java.util.List;
-
 public class FtpServer {
     private String host;
-    private List<String> aliases;
+    private String alias;
 
     public FtpServer() {
     }
 
-    public FtpServer(String host, List<String> aliases) {
+    public FtpServer(String host, String alias) {
         this.host = host;
-        this.aliases = aliases;
+        this.alias = alias;
     }
 
-    public List<String> getAliases() {
-        return aliases;
+    public String getAlias() {
+        return alias;
     }
 
-    public void setAliases(List<String> aliases) {
-        this.aliases = aliases;
+    public void setAlias(String alias) {
+        this.alias = alias;
     }
 
     public String getHost() {

@@ -38,7 +38,8 @@ public class FtpResource {
     @Produces("application/json")
     public Response listFiles(@PathParam("alias") String alias) throws IOException {
         FTPClient ftpClient = ftpCredentialsHeader.connect(jsonWebToken.getSubject(), alias);
-        return Response.ok(ftpClientService.getFilenames(ftpClient, "/")).build();
+        System.out.println("list");
+        return Response.ok(ftpClientService.getFilesRecursive(ftpClient, "/")).build();
     }
 
     @GET
@@ -48,11 +49,17 @@ public class FtpResource {
             @PathParam("alias") String alias,
             @PathParam("path") String path,
             @QueryParam("action") String action,
-            @QueryParam("recursive") boolean recursive) throws IOException {
+            @QueryParam("recursive") boolean recursive,
+            @QueryParam("type") String type
+    ) throws IOException {
         FTPClient ftpClient = ftpCredentialsHeader.connect(jsonWebToken.getSubject(), alias);
 
         if ("download".equals(action)) {
-            return Response.ok(ftpClientService.download(ftpClient, path)).build();
+            if ("file".equals(type)) {
+                return Response.ok(ftpClientService.download(ftpClient, path)).build();
+            } else {
+                return Response.ok(ftpClientService.downloadFolder(ftpClient, path)).build();
+            }
         } else {
             return Response.ok(ftpClientService.getFilenames(ftpClient, path)).build();
         }

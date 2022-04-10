@@ -1,6 +1,5 @@
 package fil.coo.ftp;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
@@ -12,6 +11,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -54,38 +54,32 @@ public class FtpClientService {
     }
 
     public InputStream download(FTPClient ftpClient, String path) throws IOException {
-        FTPFile[] file = ftpClient.listFiles(path);
-        if (file.length > 0) {
-            return this.downloadFolderZip(ftpClient, path);
-        } else {
-            return this.downloadFile(ftpClient, path);
-        }
+        return ftpClient.retrieveFileStream(path);
     }
 
-    private InputStream downloadFolderZip(FTPClient ftpClient, String path) throws IOException {
+    public InputStream downloadFolder(FTPClient ftpClient, String path) throws IOException {
         try (FileOutputStream fos = new FileOutputStream("tmp.zip")) {
             try (ZipOutputStream zipOut = new ZipOutputStream(fos)) {
-                List<String> filesRecursive = getFilesRecursive(ftpClient, path);
-                for (String fullPath : filesRecursive) {
-                    try (InputStream fileInputStream = ftpClient.retrieveFileStream(fullPath)) {
+                List<FtpFileDto> filesRecursive = getFilesRecursive(ftpClient, path);
+                for (FtpFileDto ftpFileDto : filesRecursive) {
+                    try (InputStream fileInputStream = ftpClient.retrieveFileStream(ftpFileDto.getFilePath())) {
                         if (fileInputStream != null) {
-                            ZipEntry zipEntry = new ZipEntry(fullPath);
+                            ZipEntry zipEntry = new ZipEntry(ftpFileDto.getFilePath());
                             zipOut.putNextEntry(zipEntry);
                             IoUtils.copy(fileInputStream, zipOut);
                         }
                     }
+                    ftpClient.completePendingCommand();
                 }
             }
         }
-
+        System.out.println("test");
         return new FileInputStream("tmp.zip");
     }
 
-    private InputStream downloadFile(FTPClient ftpClient, String path) throws IOException {
-        return ftpClient.retrieveFileStream(path);
-    }
-
     public boolean rename(FTPClient ftpClient, String path, String pathName) throws IOException {
+        System.out.println("oldPath = " + path);
+        System.out.println("new Path = " + pathName);
         return ftpClient.rename(path, pathName);
     }
 
@@ -101,17 +95,17 @@ public class FtpClientService {
         return ftpClient.listNames(path);
     }
 
-    public List<String> getFilesRecursive(FTPClient ftpClient, String path) throws IOException {
-        List<String> files = new ArrayList<>();
+    public List<FtpFileDto> getFilesRecursive(FTPClient ftpClient, String path) throws IOException {
+        List<FtpFileDto> files = new ArrayList<>();
 
         ftpClient.enterLocalPassiveMode();
         for (FTPFile file : ftpClient.listFiles(path)) {
             if (file.isFile()) {
-                files.add(path + "/" + file.getName());
-            } else if (file.isDirectory()) {
-                files.addAll(getFilesRecursive(ftpClient, path + "/" + file.getName()));
-            } else if (file.isSymbolicLink()) {
-                files.addAll(getFilesRecursive(ftpClient, path + "/" + file.getLink()));
+                files.add(new FtpFileDto(
+                        path + "/" + file.getName(),
+                        file.getTimestamp().getTimeInMillis(),
+                        file.getType()
+                ));
             }
         }
 

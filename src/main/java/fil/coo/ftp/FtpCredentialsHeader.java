@@ -33,7 +33,7 @@ public class FtpCredentialsHeader {
     public FTPClient connect(String username, String alias) throws IOException {
         FtpServer ftpServer = userFtpService.findByAlias(username, alias);
         ftpClient = new FTPClient();
-        ftpClient.connect(ftpServer.getHost(), 2121);
+        ftpClient.connect(ftpServer.getHost(), 21);
         if (!ftpClient.login(ftpUsername, ftpPassword)) {
             throw new BadFtpServerCredentialsException(ftpUsername);
         }
